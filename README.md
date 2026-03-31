@@ -74,6 +74,11 @@ npm run dev
 
 5. Get testnet TON from [@testgiver_ton_bot](https://t.me/testgiver_ton_bot)
 
+## Running Tests
+```shell
+npm run test
+```
+
 ## Tradeoffs & Compromises
 
 - **Mnemonic stored without encryption** — acceptable per task requirements, not production-grade
