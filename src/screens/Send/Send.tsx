@@ -1,11 +1,12 @@
 import {useState} from 'react'
 import {Address} from '@ton/ton'
 import {sendTransaction} from '../../crypto/transactions'
+import styles from './Send.module.css'
 
 interface SendProps {
     mnemonic: string[]
     address: string
-    knownAddresses: string[]  // from transaction history for new address warning
+    knownAddresses: string[]
     onBack: () => void
     onSuccess: () => void
 }
@@ -27,7 +28,7 @@ export function Send({
     const [showPasteConfirm, setShowPasteConfirm] = useState(false)
     const [pastedAddress, setPastedAddress] = useState('')
 
-    // Validate address format
+    // Validate TON address format
     function isValidAddress(addr: string): boolean {
         try {
             Address.parse(addr)
@@ -87,121 +88,182 @@ export function Send({
         }
     }
 
-    // Paste confirmation modal
-    if (showPasteConfirm) {
-        return (
-            <div>
-                <h2>⚠️ Confirm pasted address</h2>
-                <p>You are about to paste this address:</p>
-                <code>{pastedAddress}</code>
-                <p>First 6
-                    characters: <strong>{pastedAddress.slice(0, 6)}</strong></p>
-                <p>Last 6 characters: <strong>{pastedAddress.slice(-6)}</strong>
+    // Paste confirmation modal — rendered on top of current step
+    const pasteModal = showPasteConfirm && (
+        <div className={styles.modalOverlay}>
+            <div className={styles.modal}>
+                <p className={styles.modalTitle}>⚠️ Confirm pasted address</p>
+                <div className={styles.modalAddress}>{pastedAddress}</div>
+                <div className={styles.modalChars}>
+                    <span>First 6 characters: <strong>{pastedAddress.slice(0, 6)}</strong></span>
+                    <span>Last 6 characters: <strong>{pastedAddress.slice(-6)}</strong></span>
+                </div>
+                <p style={{fontSize: '14px', color: 'var(--text-secondary)'}}>
+                    Make sure this matches the address you intended to paste.
                 </p>
-                <p>Make sure this matches the address you intended to paste.</p>
-                <button onClick={handlePasteConfirm}>Yes, this is correct
-                </button>
-                <button onClick={() => setShowPasteConfirm(false)}>Cancel
-                </button>
+                <div className={styles.modalActions}>
+                    <button className={styles.btnSecondary}
+                            onClick={() => setShowPasteConfirm(false)}>
+                        Cancel
+                    </button>
+                    <button className={styles.btnPrimary}
+                            onClick={handlePasteConfirm}>
+                        Confirm
+                    </button>
+                </div>
             </div>
-        )
-    }
+        </div>
+    )
 
     // Send form
     if (step === 'form') {
         return (
-            <div>
-                <h2>Send TON</h2>
-                <div>
-                    <label>Recipient address</label>
-                    <input
-                        type="text"
-                        value={toAddress}
-                        onChange={e => setToAddress(e.target.value)}
-                        onPaste={handlePaste}
-                        placeholder="Enter TON address"
-                    />
-                    {/* New address warning */}
-                    {toAddress && isValidAddress(toAddress) && isNewAddress(toAddress) && (
-                        <p style={{color: 'orange'}}>
-                            ⚠️ You have never sent to this address before
-                        </p>
-                    )}
+            <>
+                {pasteModal}
+                <div className={styles.container}>
+                    <h2>Send TON</h2>
+                    <div className={styles.field}>
+                        <label className={styles.label}>Recipient
+                            address</label>
+                        <input
+                            type="text"
+                            value={toAddress}
+                            onChange={e => setToAddress(e.target.value)}
+                            onPaste={handlePaste}
+                            placeholder="Enter TON address"
+                        />
+                        {toAddress && isValidAddress(toAddress) && isNewAddress(toAddress) && (
+                            <p className={styles.warning}>
+                                ⚠️ You have never sent to this address before
+                            </p>
+                        )}
+                    </div>
+                    <div className={styles.field}>
+                        <label className={styles.label}>Amount (TON)</label>
+                        <input
+                            type="number"
+                            value={amount}
+                            onChange={e => setAmount(e.target.value)}
+                            placeholder="0.00"
+                            min="0"
+                            step="0.01"
+                        />
+                    </div>
+                    <div className={styles.field}>
+                        <label className={styles.label}>Comment
+                            (optional)</label>
+                        <input
+                            type="text"
+                            value={comment}
+                            onChange={e => setComment(e.target.value)}
+                            placeholder="Add a comment"
+                        />
+                    </div>
+                    {error && <p className={styles.error}>{error}</p>}
+                    <div className={styles.actions}>
+                        <button className={styles.btnPrimary}
+                                onClick={handleSubmit}>
+                            Continue
+                        </button>
+                        <button className={styles.btnSecondary}
+                                onClick={onBack}>
+                            Back
+                        </button>
+                    </div>
                 </div>
-                <div>
-                    <label>Amount (TON)</label>
-                    <input
-                        type="number"
-                        value={amount}
-                        onChange={e => setAmount(e.target.value)}
-                        placeholder="0.00"
-                        min="0"
-                        step="0.01"
-                    />
-                </div>
-                <div>
-                    <label>Comment (optional)</label>
-                    <input
-                        type="text"
-                        value={comment}
-                        onChange={e => setComment(e.target.value)}
-                        placeholder="Add a comment"
-                    />
-                </div>
-                {error && <p style={{color: 'red'}}>{error}</p>}
-                <button onClick={handleSubmit}>Continue</button>
-                <button onClick={onBack}>Back</button>
-            </div>
+            </>
         )
     }
 
-    // Confirmation screen before sending
+    // Confirmation screen
     if (step === 'confirm') {
         return (
-            <div>
+            <div className={styles.container}>
                 <h2>Confirm transaction</h2>
-                <p>Please verify the details before sending:</p>
-                <div>
-                    <p>To: <code>{toAddress}</code></p>
-                    <p>Amount: <strong>{amount} TON</strong></p>
-                    {comment && <p>Comment: {comment}</p>}
-                    {isNewAddress(toAddress) && (
-                        <p style={{color: 'orange'}}>
-                            ⚠️ You have never sent to this address before.
-                            Double-check it carefully.
-                        </p>
+                <div className={styles.confirmCard}>
+                    <div className={styles.confirmRow}>
+                        <span className={styles.confirmLabel}>To</span>
+                        <span className={styles.confirmValue}>{toAddress}</span>
+                    </div>
+                    <div className={styles.confirmRow}>
+                        <span className={styles.confirmLabel}>Amount</span>
+                        <span
+                            className={styles.confirmAmount}>{amount} TON</span>
+                    </div>
+                    {comment && (
+                        <div className={styles.confirmRow}>
+                            <span className={styles.confirmLabel}>Comment</span>
+                            <span
+                                className={styles.confirmValue}>{comment}</span>
+                        </div>
                     )}
                 </div>
-                <button onClick={handleConfirm}>Send</button>
-                <button onClick={() => setStep('form')}>Back</button>
+                {isNewAddress(toAddress) && (
+                    <p className={styles.warning}>
+                        ⚠️ You have never sent to this address before.
+                        Double-check it carefully.
+                    </p>
+                )}
+                <div className={styles.actions}>
+                    <button className={styles.btnPrimary}
+                            onClick={handleConfirm}>
+                        Send
+                    </button>
+                    <button className={styles.btnSecondary}
+                            onClick={() => setStep('form')}>
+                        Back
+                    </button>
+                </div>
             </div>
         )
     }
 
     // Sending in progress
     if (step === 'sending') {
-        return <div>Sending transaction... Please wait.</div>
+        return (
+            <div className={styles.statusScreen}>
+                <div className={styles.statusIcon}>⏳</div>
+                <h2>Sending...</h2>
+                <p className={styles.statusText}>
+                    Please wait while your transaction is being submitted to the
+                    network.
+                </p>
+            </div>
+        )
     }
 
     // Success
     if (step === 'success') {
         return (
-            <div>
-                <h2>✅ Transaction sent</h2>
-                <p>Your transaction has been submitted to the network.</p>
-                <p>It may take a few seconds to confirm.</p>
-                <button onClick={onSuccess}>Back to wallet</button>
+            <div className={styles.statusScreen}>
+                <div className={styles.statusIcon}>✅</div>
+                <h2>Transaction sent</h2>
+                <p className={styles.statusText}>
+                    Your transaction has been submitted to the network.
+                    It may take a few seconds to confirm.
+                </p>
+                <button className={styles.btnPrimary} onClick={onSuccess}>
+                    Back to wallet
+                </button>
             </div>
         )
     }
 
     // Error
     return (
-        <div>
-            <h2>❌ Transaction failed</h2>
-            <p style={{color: 'red'}}>{error}</p>
-            <button onClick={() => setStep('form')}>Try again</button>
-            <button onClick={onBack}>Back</button>
+        <div className={styles.statusScreen}>
+            <div className={styles.statusIcon}>❌</div>
+            <h2>Transaction failed</h2>
+            <p className={styles.error}>{error}</p>
+            <div className={styles.actions}>
+                <button className={styles.btnPrimary}
+                        onClick={() => setStep('form')}>
+                    Try again
+                </button>
+                <button className={styles.btnSecondary} onClick={onBack}>
+                    Back
+                </button>
+            </div>
         </div>
     )
 }

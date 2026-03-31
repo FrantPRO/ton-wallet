@@ -1,0 +1,193 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Form */
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.warning {
+    background: rgba(245, 166, 35, 0.1);
+    border: 1px solid var(--warning);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    color: var(--warning);
+    font-size: 14px;
+}
+
+.error {
+    color: var(--error);
+    font-size: 14px;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btnPrimary {
+    background: var(--accent);
+    color: #ffffff;
+    width: 100%;
+    padding: 14px;
+}
+
+.btnPrimary:hover {
+    background: var(--accent-hover);
+}
+
+.btnPrimary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btnSecondary {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    width: 100%;
+    padding: 14px;
+}
+
+.btnSecondary:hover {
+    background: var(--bg-hover);
+}
+
+.btnDanger {
+    background: rgba(255, 77, 77, 0.15);
+    color: var(--error);
+    border: 1px solid var(--error);
+    width: 100%;
+    padding: 14px;
+}
+
+.btnDanger:hover {
+    background: rgba(255, 77, 77, 0.25);
+}
+
+/* Confirmation card */
+.confirmCard {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.confirmRow {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.confirmLabel {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.confirmValue {
+    font-size: 15px;
+    word-break: break-all;
+}
+
+.confirmAmount {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Modal overlay */
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 100;
+}
+
+.modal {
+    background: var(--bg-secondary);
+    border: 1px solid var(--warning);
+    border-radius: var(--radius);
+    padding: 24px;
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.modalTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--warning);
+}
+
+.modalAddress {
+    background: var(--bg-primary);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    word-break: break-all;
+}
+
+.modalChars {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.modalChars strong {
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.modalActions {
+    display: flex;
+    gap: 12px;
+}
+
+.modalActions button {
+    flex: 1;
+}
+
+/* Status screens */
+.statusScreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding-top: 48px;
+    text-align: center;
+}
+
+.statusIcon {
+    font-size: 56px;
+}
+
+.statusText {
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1.6;
+}

@@ -1,0 +1,45 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+}
+
+.label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btnPrimary {
+    background: var(--accent);
+    color: #ffffff;
+    width: 100%;
+    padding: 14px;
+}
+
+.btnPrimary:hover {
+    background: var(--accent-hover);
+}
+
+.btnSecondary {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    width: 100%;
+    padding: 14px;
+}
+
+.btnSecondary:hover {
+    background: var(--bg-hover);
+}

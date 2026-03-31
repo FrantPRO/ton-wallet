@@ -1,6 +1,7 @@
 import {useState} from 'react'
 import {createWallet, importWallet} from '../../crypto/wallet'
 import {saveMnemonic} from '../../storage/walletStorage'
+import styles from './Setup.module.css'
 
 type SetupStep = 'choice' | 'show_mnemonic' | 'import_form'
 
@@ -60,15 +61,22 @@ export function Setup({onComplete}: SetupProps) {
     // Step 1: choice between create and import
     if (step === 'choice') {
         return (
-            <div>
-                <h1>TON Wallet</h1>
-                <p>Testnet</p>
-                <button onClick={handleCreate} disabled={loading}>
-                    {loading ? 'Creating...' : 'Create new wallet'}
-                </button>
-                <button onClick={() => setStep('import_form')}>
-                    Import wallet
-                </button>
+            <div className={styles.container}>
+                <div className={styles.logo}>💎</div>
+                <div>
+                    <h1 className={styles.title}>TON Wallet</h1>
+                    <p className={styles.subtitle}>Testnet</p>
+                </div>
+                <div className={styles.choiceButtons}>
+                    <button className={styles.btnPrimary} onClick={handleCreate}
+                            disabled={loading}>
+                        {loading ? 'Creating...' : 'Create new wallet'}
+                    </button>
+                    <button className={styles.btnSecondary}
+                            onClick={() => setStep('import_form')}>
+                        Import wallet
+                    </button>
+                </div>
             </div>
         )
     }
@@ -76,54 +84,64 @@ export function Setup({onComplete}: SetupProps) {
     // Step 2: show generated mnemonic before proceeding
     if (step === 'show_mnemonic') {
         return (
-            <div>
+            <div className={styles.container}>
                 <h2>Save your mnemonic</h2>
-                <p>
-                    ⚠️ Write down these 24 words and store them in a safe place.
-                    Without them you will permanently lose access to your
-                    wallet.
-                    Never share these words with anyone.
-                </p>
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(4, 1fr)',
-                    gap: '8px'
-                }}>
-                    {mnemonic.map((word, index) => (
-                        <span key={index}>
-              {index + 1}. {word}
-            </span>
-                    ))}
+                <div className={styles.mnemonicContainer}>
+                    <p className={styles.warning}>
+                        ⚠️ Write down these 24 words and store them in a safe
+                        place.
+                        Without them you will permanently lose access to your
+                        wallet.
+                        Never share these words with anyone.
+                    </p>
+                    <div className={styles.mnemonicGrid}>
+                        {mnemonic.map((word, index) => (
+                            <div key={index} className={styles.mnemonicWord}>
+                                <span
+                                    className={styles.mnemonicIndex}>{index + 1}</span>
+                                {word}
+                            </div>
+                        ))}
+                    </div>
+                    <div className={styles.mnemonicActions}>
+                        <button
+                            className={styles.btnSecondary}
+                            onClick={() => navigator.clipboard.writeText(mnemonic.join(' '))}>
+                            Copy to clipboard
+                        </button>
+                        <button className={styles.btnPrimary}
+                                onClick={handleMnemonicConfirmed}>
+                            I have saved it
+                        </button>
+                    </div>
                 </div>
-                <button
-                    onClick={() => navigator.clipboard.writeText(mnemonic.join(' '))}>
-                    Copy to clipboard
-                </button>
-                <button onClick={handleMnemonicConfirmed}>
-                    I have saved it, continue
-                </button>
             </div>
         )
     }
 
     // Step 3: import form — paste or type mnemonic
     return (
-        <div>
+        <div className={styles.container}>
             <h2>Import wallet</h2>
-            <p>Enter 24 mnemonic words separated by spaces</p>
-            <textarea
-                value={importText}
-                onChange={e => setImportText(e.target.value)}
-                placeholder="word1 word2 word3 ..."
-                rows={4}
-            />
-            {error && <p style={{color: 'red'}}>{error}</p>}
-            <button onClick={handleImport} disabled={loading}>
-                {loading ? 'Importing...' : 'Import'}
-            </button>
-            <button onClick={() => setStep('choice')}>
-                Back
-            </button>
+            <div className={styles.importContainer}>
+                <p className={styles.subtitle}>Enter 24 mnemonic words separated
+                    by spaces</p>
+                <textarea
+                    value={importText}
+                    onChange={e => setImportText(e.target.value)}
+                    placeholder="word1 word2 word3 ..."
+                    rows={4}
+                />
+                {error && <p className={styles.error}>{error}</p>}
+                <button className={styles.btnPrimary} onClick={handleImport}
+                        disabled={loading}>
+                    {loading ? 'Importing...' : 'Import'}
+                </button>
+                <button className={styles.btnSecondary}
+                        onClick={() => setStep('choice')}>
+                    Back
+                </button>
+            </div>
         </div>
     )
 }

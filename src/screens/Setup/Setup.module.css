@@ -1,0 +1,117 @@
+/* Main container */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding-top: 48px;
+}
+
+.logo {
+    font-size: 48px;
+}
+
+.title {
+    text-align: center;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 14px;
+    text-align: center;
+    margin-top: 4px;
+}
+
+/* Choice buttons */
+.choiceButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.btnPrimary {
+    background: var(--accent);
+    color: #ffffff;
+    width: 100%;
+    padding: 14px;
+}
+
+.btnPrimary:hover {
+    background: var(--accent-hover);
+}
+
+.btnPrimary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btnSecondary {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    width: 100%;
+    padding: 14px;
+}
+
+.btnSecondary:hover {
+    background: var(--bg-hover);
+}
+
+/* Mnemonic grid */
+.mnemonicContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+.warning {
+    background: rgba(245, 166, 35, 0.1);
+    border: 1px solid var(--warning);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    color: var(--warning);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.mnemonicGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.mnemonicWord {
+    background: var(--bg-card);
+    border-radius: var(--radius-sm);
+    padding: 8px;
+    font-size: 13px;
+    text-align: center;
+}
+
+.mnemonicIndex {
+    color: var(--text-muted);
+    font-size: 11px;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.mnemonicActions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* Import form */
+.importContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+.error {
+    color: var(--error);
+    font-size: 14px;
+}
