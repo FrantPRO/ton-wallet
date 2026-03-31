@@ -8,13 +8,15 @@ interface DashboardProps {
     onSend: () => void
     onReceive: () => void
     onTransactionsLoaded: (txs: Transaction[]) => void
+    onBalanceLoaded: (balance: string) => void
 }
 
 export function Dashboard({
                               address,
                               onSend,
                               onReceive,
-                              onTransactionsLoaded
+                              onTransactionsLoaded,
+                              onBalanceLoaded
                           }: DashboardProps) {
     const [balance, setBalance] = useState<string | null>(null)
     const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -31,6 +33,7 @@ export function Dashboard({
                     getTransactions(address),
                 ])
                 setBalance(bal)
+                onBalanceLoaded(bal)
                 setTransactions(txs)
                 onTransactionsLoaded(txs)
             } catch (e) {

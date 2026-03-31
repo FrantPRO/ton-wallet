@@ -43,3 +43,9 @@
 .btnSecondary:hover {
     background: var(--bg-hover);
 }
+
+.qrContainer {
+    background: #242424;
+    padding: 16px;
+    border-radius: var(--radius-sm);
+}

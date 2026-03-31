@@ -6,6 +6,7 @@ import styles from './Send.module.css'
 interface SendProps {
     mnemonic: string[]
     address: string
+    balance: string
     knownAddresses: string[]
     onBack: () => void
     onSuccess: () => void
@@ -16,17 +17,20 @@ type SendStep = 'form' | 'confirm' | 'sending' | 'success' | 'error'
 export function Send({
                          mnemonic,
                          address,
+                         balance,
                          knownAddresses,
                          onBack,
                          onSuccess
                      }: SendProps) {
     const [step, setStep] = useState<SendStep>('form')
+    const [balanceWarningShown, setBalanceWarningShown] = useState(false)
     const [toAddress, setToAddress] = useState('')
     const [amount, setAmount] = useState('')
     const [comment, setComment] = useState('')
     const [error, setError] = useState('')
     const [showPasteConfirm, setShowPasteConfirm] = useState(false)
     const [pastedAddress, setPastedAddress] = useState('')
+    const [warning, setWarning] = useState('')
 
     // Validate TON address format
     function isValidAddress(addr: string): boolean {
@@ -71,6 +75,13 @@ export function Send({
         const amountNum = parseFloat(amount)
         if (isNaN(amountNum) || amountNum <= 0) {
             setError('Invalid amount')
+            return
+        }
+        // Warn if sending more than 90% of balance
+        const balanceNum = parseFloat(balance)
+        if (amountNum > balanceNum * 0.9 && !balanceWarningShown) {
+            setWarning('⚠️ You are about to send most of your balance. Click Continue again to proceed.')
+            setBalanceWarningShown(true)
             return
         }
         setStep('confirm')
@@ -143,7 +154,11 @@ export function Send({
                         <input
                             type="number"
                             value={amount}
-                            onChange={e => setAmount(e.target.value)}
+                            onChange={e => {
+                                setAmount(e.target.value)
+                                setWarning('')
+                                setBalanceWarningShown(false)
+                            }}
                             placeholder="0.00"
                             min="0"
                             step="0.01"
@@ -160,6 +175,7 @@ export function Send({
                         />
                     </div>
                     {error && <p className={styles.error}>{error}</p>}
+                    {warning && <p className={styles.warning}>{warning}</p>}
                     <div className={styles.actions}>
                         <button className={styles.btnPrimary}
                                 onClick={handleSubmit}>

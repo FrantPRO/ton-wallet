@@ -16,6 +16,7 @@ function App() {
     const [loading, setLoading] = useState(true)
     // Transactions stored here to share known addresses with Send screen
     const [transactions, setTransactions] = useState<Transaction[]>([])
+    const [balance, setBalance] = useState<string>('0')
 
     // Restore wallet from localStorage on startup
     useEffect(() => {
@@ -60,12 +61,14 @@ function App() {
                     onSend={() => setScreen('send')}
                     onReceive={() => setScreen('receive')}
                     onTransactionsLoaded={setTransactions}
+                    onBalanceLoaded={setBalance}
                 />
             )}
             {screen === 'send' && (
                 <Send
                     mnemonic={mnemonic}
                     address={address}
+                    balance={balance}
                     knownAddresses={knownAddresses}
                     onBack={() => setScreen('dashboard')}
                     onSuccess={() => setScreen('dashboard')}
