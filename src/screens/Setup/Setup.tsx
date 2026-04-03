@@ -58,6 +58,14 @@ export function Setup({onComplete}: SetupProps) {
         onComplete(mnemonic, address)
     }
 
+    async function handleCopyMnemonic() {
+        try {
+            await navigator.clipboard.writeText(mnemonic.join(' '))
+        } catch {
+            setError('Failed to copy mnemonic')
+        }
+    }
+
     // Step 1: choice between create and import
     if (step === 'choice') {
         return (
@@ -106,7 +114,7 @@ export function Setup({onComplete}: SetupProps) {
                     <div className={styles.mnemonicActions}>
                         <button
                             className={styles.btnSecondary}
-                            onClick={() => navigator.clipboard.writeText(mnemonic.join(' '))}>
+                            onClick={handleCopyMnemonic}>
                             Copy to clipboard
                         </button>
                         <button className={styles.btnPrimary}
@@ -114,6 +122,7 @@ export function Setup({onComplete}: SetupProps) {
                             I have saved it
                         </button>
                     </div>
+                    {error && <p className={styles.error}>{error}</p>}
                 </div>
             </div>
         )

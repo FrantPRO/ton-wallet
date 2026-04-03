@@ -1,3 +1,4 @@
+import {useState} from 'react'
 import {QRCodeSVG} from 'qrcode.react'
 import styles from './Receive.module.css'
 
@@ -7,6 +8,17 @@ interface ReceiveProps {
 }
 
 export function Receive({address, onBack}: ReceiveProps) {
+    const [copyError, setCopyError] = useState('')
+
+    async function handleCopyAddress() {
+        try {
+            await navigator.clipboard.writeText(address)
+            setCopyError('')
+        } catch {
+            setCopyError('Failed to copy address')
+        }
+    }
+
     return (
         <div className={styles.container}>
             <h2>Receive TON</h2>
@@ -23,10 +35,11 @@ export function Receive({address, onBack}: ReceiveProps) {
                 <code>{address}</code>
                 <button
                     className={styles.btnPrimary}
-                    onClick={() => navigator.clipboard.writeText(address)}
+                    onClick={handleCopyAddress}
                 >
                     Copy address
                 </button>
+                {copyError && <p style={{color: 'var(--error)'}}>{copyError}</p>}
             </div>
             <button className={styles.btnSecondary} onClick={onBack}>
                 Back

@@ -23,6 +23,7 @@ export function Dashboard({
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
+    const [copyError, setCopyError] = useState('')
 
     // Load balance and transactions on mount
     useEffect(() => {
@@ -46,6 +47,15 @@ export function Dashboard({
         load()
     }, [address])
 
+    async function handleCopyAddress() {
+        try {
+            await navigator.clipboard.writeText(address)
+            setCopyError('')
+        } catch {
+            setCopyError('Failed to copy address')
+        }
+    }
+
     // Filter transactions by address or comment
     const filtered = transactions.filter(tx =>
         tx.fromAddress.toLowerCase().includes(search.toLowerCase()) ||
@@ -65,9 +75,10 @@ export function Dashboard({
                     <code>{address}</code>
                     <button
                         className={styles.btnCopy}
-                        onClick={() => navigator.clipboard.writeText(address)}>Copy
+                        onClick={handleCopyAddress}>Copy
                     </button>
                 </div>
+                {copyError && <div style={{color: 'var(--error)'}}>{copyError}</div>}
             </div>
 
             {/* Balance */}

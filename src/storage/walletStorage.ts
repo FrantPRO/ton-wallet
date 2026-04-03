@@ -12,9 +12,13 @@ export function loadMnemonic(): string[] | null {
     if (raw === null) return null
 
     try {
-        return JSON.parse(raw) as string[]
-    } catch (e) {
-        console.error('Failed to parse mnemonic from storage', e)
+        const parsed = JSON.parse(raw) as unknown
+        if (!Array.isArray(parsed) || !parsed.every(word => typeof word === 'string')) {
+            return null
+        }
+
+        return parsed
+    } catch {
         return null
     }
 }

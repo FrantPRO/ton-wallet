@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react'
-import {loadMnemonic} from './storage/walletStorage'
+import {loadMnemonic, clearWallet} from './storage/walletStorage'
 import {deriveAddress} from './crypto/wallet'
 import {Setup} from './screens/Setup/Setup'
 import {Dashboard} from './screens/Dashboard/Dashboard'
@@ -21,14 +21,22 @@ function App() {
     // Restore wallet from localStorage on startup
     useEffect(() => {
         async function restore() {
-            const savedMnemonic = loadMnemonic()
-            if (savedMnemonic) {
-                const savedAddress = await deriveAddress(savedMnemonic)
-                setMnemonic(savedMnemonic)
-                setAddress(savedAddress)
-                setScreen('dashboard')
+            try {
+                const savedMnemonic = loadMnemonic()
+                if (savedMnemonic) {
+                    const savedAddress = await deriveAddress(savedMnemonic)
+                    setMnemonic(savedMnemonic)
+                    setAddress(savedAddress)
+                    setScreen('dashboard')
+                }
+            } catch {
+                clearWallet()
+                setMnemonic([])
+                setAddress('')
+                setScreen('setup')
+            } finally {
+                setLoading(false)
             }
-            setLoading(false)
         }
 
         restore()
@@ -43,7 +51,10 @@ function App() {
 
     // Extract unique known addresses from transaction history
     const knownAddresses = [
-        ...new Set(transactions.map(tx => tx.toAddress))
+        ...new Set([
+            ...transactions.map(tx => tx.toAddress),
+            ...transactions.map(tx => tx.fromAddress),
+        ])
     ]
 
     if (loading) {

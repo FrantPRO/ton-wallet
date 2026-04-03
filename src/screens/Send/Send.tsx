@@ -13,6 +13,7 @@ interface SendProps {
 }
 
 type SendStep = 'form' | 'confirm' | 'sending' | 'success' | 'error'
+const NETWORK_FEE_RESERVE = 0.05
 
 export function Send({
                          mnemonic,
@@ -47,6 +48,38 @@ export function Send({
         return !knownAddresses.includes(addr)
     }
 
+    function isSimilarAddress(a: string, b: string): boolean {
+        const normalizedA = a.trim()
+        const normalizedB = b.trim()
+
+        if (normalizedA === normalizedB) {
+            return false
+        }
+
+        return normalizedA.slice(0, 6) === normalizedB.slice(0, 6) ||
+            normalizedA.slice(-6) === normalizedB.slice(-6)
+    }
+
+    function hasSimilarKnownAddress(addr: string): boolean {
+        return knownAddresses.some(knownAddress => isSimilarAddress(addr, knownAddress))
+    }
+
+    function getAddressWarning(addr: string): string {
+        if (!addr || !isValidAddress(addr)) {
+            return ''
+        }
+
+        if (hasSimilarKnownAddress(addr)) {
+            return "⚠️ This address looks similar to one you've used before. Verify carefully."
+        }
+
+        if (isNewAddress(addr)) {
+            return '⚠️ You have never sent to this address before'
+        }
+
+        return ''
+    }
+
     // Handle paste event — show confirmation modal
     function handlePaste(e: React.ClipboardEvent<HTMLInputElement>) {
         e.preventDefault()
@@ -77,8 +110,13 @@ export function Send({
             setError('Invalid amount')
             return
         }
-        // Warn if sending more than 90% of balance
         const balanceNum = parseFloat(balance)
+        const effectiveMax = Math.max(balanceNum - NETWORK_FEE_RESERVE, 0)
+        if (amountNum > effectiveMax) {
+            setError('Insufficient balance')
+            return
+        }
+        // Warn if sending more than 90% of balance
         if (amountNum > balanceNum * 0.9 && !balanceWarningShown) {
             setWarning('⚠️ You are about to send most of your balance. Click Continue again to proceed.')
             setBalanceWarningShown(true)
@@ -93,7 +131,7 @@ export function Send({
         try {
             await sendTransaction({mnemonic, toAddress, amount, comment})
             setStep('success')
-        } catch (e) {
+        } catch {
             setError('Transaction failed. Please try again.')
             setStep('error')
         }
@@ -139,13 +177,16 @@ export function Send({
                         <input
                             type="text"
                             value={toAddress}
-                            onChange={e => setToAddress(e.target.value)}
+                            onChange={e => {
+                                setToAddress(e.target.value)
+                                setError('')
+                            }}
                             onPaste={handlePaste}
                             placeholder="Enter TON address"
                         />
-                        {toAddress && isValidAddress(toAddress) && isNewAddress(toAddress) && (
+                        {getAddressWarning(toAddress) && (
                             <p className={styles.warning}>
-                                ⚠️ You have never sent to this address before
+                                {getAddressWarning(toAddress)}
                             </p>
                         )}
                     </div>
@@ -214,10 +255,10 @@ export function Send({
                         </div>
                     )}
                 </div>
-                {isNewAddress(toAddress) && (
+                {getAddressWarning(toAddress) && (
                     <p className={styles.warning}>
-                        ⚠️ You have never sent to this address before.
-                        Double-check it carefully.
+                        {getAddressWarning(toAddress)}
+                        {isNewAddress(toAddress) && ' Double-check it carefully.'}
                     </p>
                 )}
                 <div className={styles.actions}>
